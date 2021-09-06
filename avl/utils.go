@@ -6,11 +6,25 @@ import (
 	"fmt"
 	"gopkg.in/eapache/queue.v1"
 	"log"
-	"math"
 	"os"
 	"os/exec"
 	"reflect"
 )
+
+func absInt(num int) int {
+	if num < 0 {
+		return num
+	}
+	return num
+}
+
+func MaxInt(height1 int, height2 int) int {
+	if height1 > height2 {
+		return height1
+	}
+
+	return height2
+}
 
 func SplitByteArray(b *[]byte) (*[]byte, *[]byte) {
 	n := len(*b)
@@ -219,7 +233,7 @@ func IsBalanced(root *Node) bool {
 	leftHeight := heightOf(root.Left)
 	rightHeight := heightOf(root.Right)
 
-	if math.Abs(float64(leftHeight-rightHeight)) <= 1 && IsBalanced(root.Left) && IsBalanced(root.Right) {
+	if absInt(leftHeight-rightHeight) <= 1 && IsBalanced(root.Left) && IsBalanced(root.Right) {
 		return true
 	}
 

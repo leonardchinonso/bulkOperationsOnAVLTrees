@@ -11,7 +11,6 @@ package avl
 
 import (
 	"bytes"
-	"math"
 )
 
 type Node struct {
@@ -57,7 +56,7 @@ func heightOf(node *Node) int {
 func getHeight(tree *Node) int {
 	var height int
 	if tree.Left != nil && tree.Right != nil {
-		height = int(math.Max(float64(getHeight(tree.Left)), float64(getHeight(tree.Right)))) + 1
+		height = MaxInt(getHeight(tree.Left), getHeight(tree.Right)) + 1
 	} else if tree.Left != nil {
 		height = getHeight(tree.Left) + 1
 	} else if tree.Right != nil {
@@ -77,7 +76,7 @@ func updateHeight(tree *Node) {
 	if tree.Right != nil {
 		rightHeight = tree.Right.Height
 	}
-	tree.Height = int(math.Max(float64(leftHeight), float64(rightHeight))) + 1
+	tree.Height = MaxInt(leftHeight, rightHeight) + 1
 }
 
 // expose returns key of a node and it's left and right children
