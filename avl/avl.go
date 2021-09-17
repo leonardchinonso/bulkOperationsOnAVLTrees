@@ -31,21 +31,21 @@ func NewNode(key []byte, left, right *Node) *Node {
 	return node
 }
 
-// populatePaths attaches node paths from the root of a node down to the node
-func (n *Node) populatePaths(path string) {
+// PopulatePaths attaches node paths from the root of a node down to the node
+func (n *Node) PopulatePaths(path string) {
 	n.Path = path
 	if n.Left != nil {
-		n.Left.populatePaths(path + "L")
+		n.Left.PopulatePaths(path + "L")
 	}
 	if n.Right != nil {
-		n.Right.populatePaths(path + "R")
+		n.Right.PopulatePaths(path + "R")
 	}
 }
 
-// Get height of a node
+// HeightOf Get height of a node
 // This function exists because the join method can take a null Node pointer
 // and accessing the height property of a null Node pointer will fail
-func heightOf(node *Node) int {
+func HeightOf(node *Node) int {
 	if node == nil {
 		return -1
 	}
@@ -110,16 +110,16 @@ func rotateLeft(tree *Node) *Node {
 // joinRight concatenates a left tree, k and a right tree
 func joinRight(tree1 *Node, k []byte, tree2 *Node) *Node {
 	l, kPrime, c := expose(tree1)
-	if heightOf(c) <= heightOf(tree2)+1 {
+	if HeightOf(c) <= HeightOf(tree2)+1 {
 		treePrime := NewNode(k, c, tree2)
-		if heightOf(treePrime) <= heightOf(l)+1 {
+		if HeightOf(treePrime) <= HeightOf(l)+1 {
 			return NewNode(kPrime, l, treePrime)
 		}
 		return rotateLeft(NewNode(kPrime, l, rotateRight(treePrime)))
 	}
 	treePrime := joinRight(c, k, tree2)
 	treePrimePrime := NewNode(kPrime, l, treePrime)
-	if heightOf(treePrime) <= heightOf(l)+1 {
+	if HeightOf(treePrime) <= HeightOf(l)+1 {
 		return treePrimePrime
 	}
 	return rotateLeft(treePrimePrime)
@@ -128,16 +128,16 @@ func joinRight(tree1 *Node, k []byte, tree2 *Node) *Node {
 // joinLeft concatenates a left tree, k and a right tree
 func joinLeft(tree1 *Node, k []byte, tree2 *Node) *Node {
 	c, kPrime, r := expose(tree2)
-	if heightOf(c) <= heightOf(tree1)+1 {
+	if HeightOf(c) <= HeightOf(tree1)+1 {
 		treePrime := NewNode(k, tree1, c)
-		if heightOf(treePrime) <= heightOf(r)+1 {
+		if HeightOf(treePrime) <= HeightOf(r)+1 {
 			return NewNode(kPrime, treePrime, r)
 		}
 		return rotateRight(NewNode(kPrime, rotateLeft(treePrime), r))
 	}
 	treePrime := joinLeft(tree1, k, c)
 	treePrimePrime := NewNode(kPrime, treePrime, r)
-	if heightOf(treePrime) <= heightOf(r)+1 {
+	if HeightOf(treePrime) <= HeightOf(r)+1 {
 		return treePrimePrime
 	}
 	return rotateRight(treePrimePrime)
@@ -145,9 +145,9 @@ func joinLeft(tree1 *Node, k []byte, tree2 *Node) *Node {
 
 // join concatenates a left tree, k and a right tree
 func join(tree1 *Node, k []byte, tree2 *Node) *Node {
-	if heightOf(tree1) > heightOf(tree2)+1 {
+	if HeightOf(tree1) > HeightOf(tree2)+1 {
 		return joinRight(tree1, k, tree2)
-	} else if heightOf(tree2) > heightOf(tree1)+1 {
+	} else if HeightOf(tree2) > HeightOf(tree1)+1 {
 		return joinLeft(tree1, k, tree2)
 	}
 	return NewNode(k, tree1, tree2)

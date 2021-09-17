@@ -1,4 +1,4 @@
-package avl
+package cairo_avl
 
 import (
 	"bufio"
@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"sort"
 )
 
 func absInt(num int) int {
@@ -26,6 +27,7 @@ func MaxInt(height1 int, height2 int) int {
 	return height2
 }
 
+// SplitByteArray splits a byte slice into two parts, one part having a length 3/4 of the original slice
 func SplitByteArray(b *[]byte) (*[]byte, *[]byte) {
 	n := len(*b)
 
@@ -44,6 +46,7 @@ func SplitByteArray(b *[]byte) (*[]byte, *[]byte) {
 	return &first, &second
 }
 
+// EmbedByteArray pairs bytes up as single values and removes duplicate byte pair entries
 func EmbedByteArray(b []byte, set *map[string]bool) *[][]byte {
 	var res [][]byte
 	for i := 0; i < len(b); i += 2 {
@@ -61,16 +64,6 @@ func EmbedByteArray(b []byte, set *map[string]bool) *[][]byte {
 	}
 
 	return &res
-}
-
-// CreateTree creates a balanced binary search tree from an unsorted array of integers
-func CreateTree(arr *[][]byte) *Node {
-	var root *Node
-	for _, b := range *arr {
-		root = Insert(root, b)
-	}
-
-	return root
 }
 
 // handleError takes care of generic errors
@@ -111,7 +104,7 @@ func getDirection(node *interface{}) string {
 
 // constructGraph creates a .dot file containing the tree structure of a binary tree
 func constructGraph(filename string, root *Node) {
-	root.PopulatePaths("N")
+	root.populatePaths("N")
 
 	var data string
 	colors := make(map[string]string)
@@ -181,8 +174,8 @@ func constructGraph(filename string, root *Node) {
 	write(&data, w)
 }
 
-// Visualize creates a .png file from a given .dot file
-func Visualize(filename string, root *Node) {
+// VisualizeNodeTree creates a .png file from a given .dot file
+func VisualizeNodeTree(filename string, root *Node) {
 	if root == nil {
 		return
 	}
@@ -194,6 +187,9 @@ func Visualize(filename string, root *Node) {
 }
 
 func IsInTree(root *Node, key *[]byte) bool {
+	//if bytes.Compare(root.Key, []byte{236, 104}) == 0 {
+	//	fmt.Println(root, key)
+	//}
 	if root == nil || key == nil {
 		return false
 	}
@@ -258,4 +254,30 @@ func IsValidBST(root *Node) bool {
 	}
 
 	return true
+}
+
+func sortArray(arr *[][]byte) {
+	sort.Slice(*arr, func(i, j int) bool {
+		return bytes.Compare((*arr)[i], (*arr)[j]) == -1
+	})
+}
+
+func printTree(root *Node, space string) {
+	if root != nil {
+		fmt.Println(space, root)
+		printTree(root.Left, space+space)
+		printTree(root.Right, space+space)
+	}
+}
+
+func printDictTree(root *DictNode, space string) {
+	if root != nil {
+		fmt.Println(space, root)
+		printDictTree(root.Left, space+space)
+		printDictTree(root.Right, space+space)
+	}
+}
+
+func TestJoinLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node) (int, *Node) {
+	return joinLeft(k, v, TL, TR, TN)
 }
