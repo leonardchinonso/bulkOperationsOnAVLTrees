@@ -28,7 +28,7 @@ The `main.go` file imports both packages for use in comparison of how they work.
 ### BUILDING CODE
 To run the `main.go` file, in the terminal, from the root directory, run:
 
-    go run main.go
+    > go run main.go
 
 The `main.go` file can be used to run quick tests to observe any cases, feel free to add your code to test specific outcomes.
 
@@ -36,7 +36,7 @@ The `main.go` file can be used to run quick tests to observe any cases, feel fre
 In the `*_test.go` files, there are fuzz tests written for the `union` and `difference` bulk operations. To run any of these fuzz tests,
 from the root directory, navigate to the package/folder containing the `*_test.go` file and run the command:
 
-    gotip test -fuzz=FUZZ_FUNCTION_NAME
+    > gotip test -fuzz=FUZZ_FUNCTION_NAME
 
 For example, to run the `FuzzUnion` fuzz test in the `cairo-avl` package, first navigate to the directory from the root directory with:
 
