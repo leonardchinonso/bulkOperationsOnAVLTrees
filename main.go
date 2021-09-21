@@ -10,6 +10,7 @@ func main() {
 
 	//temp1, temp2 := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, []byte{14, 15, 16, 17, 18, 19, 20}
 	//temp1, temp2 := []byte{1, 2, 3, 4, 5, 6}, []byte{14, 15, 16, 17, 18, 19}
+	//temp1, temp2 := []byte("\x1d\xff\xbc \x88"), []byte("\x00\x00\x00d\xbc")
 	temp1, temp2 := []byte("\x1d\xff\xbc \x88"), []byte("\x00\x00\x00d\xbc")
 
 	b1 := make([][]byte, 0)
@@ -18,7 +19,7 @@ func main() {
 	}
 
 	b2 := make([][]byte, 0)
-	if temp1 != nil {
+	if temp2 != nil {
 		b2 = *(avl2.EmbedByteArray(temp2, &set))
 	}
 
@@ -29,8 +30,13 @@ func main() {
 	avl2.VisualizeNodeTree("t1", t1)
 	avl2.VisualizeNodeTree("t2", t2NodeType)
 
-	tU := avl2.Union(t1, t2)
+	tU, numOfExposedNodesInUnion := avl2.Union(t1, t2)
 	avl2.VisualizeNodeTree("tu", tU)
+
+	newNodesCount := 0
+	avl2.CountNumberOfNewHashes(tU, &newNodesCount)
+	fmt.Println("number of new nodes created: ", newNodesCount)
+	fmt.Println("number of nodes exposed in union: ", numOfExposedNodesInUnion)
 
 	// Check that all nodes in tU are either in t1 or t2
 	for _, key := range *(avl2.GetInorderTraversal(tU)) {
@@ -58,60 +64,99 @@ func main() {
 		}
 	}
 
-	TL := avl2.Node{
-		Key:     []byte{0, 0},
-		Value:   []byte{0, 0},
-		Left:    nil,
-		Right:   nil,
-		Nested:  nil,
-		Height:  1,
-		Path:    "",
-		Exposed: false,
-	}
+	//tt1 := avl.CreateTree(&b1)
+	//tt2 := avl.CreateTree(&b2)
+	//
+	//tDD := avl.Difference(tt1, tt2)
+	//avl.Visualize("tdd", tDD)
+	//
+	//fmt.Println()
+	//fmt.Println("Trying not regs")
+	//tD := avl2.Difference(t1, t2)
+	//avl2.VisualizeNodeTree("td", tD)
 
-	LF := avl2.Node{
-		Key:     []byte{29, 255},
-		Value:   []byte{29, 255},
-		Left:    nil,
-		Right:   nil,
-		Nested:  nil,
-		Height:  1,
-		Path:    "",
-		Exposed: false,
-	}
+	//// Check that all nodes in t1 are either in tD or t2 but not both
+	//for _, key := range *(avl2.GetInorderTraversal(t1)) {
+	//	in_tD := avl2.IsInTree(tD, &key)
+	//	in_t2 := avl2.IsInTree(t2NodeType, &key)
+	//
+	//	if !in_tD && !in_t2 {
+	//		fmt.Printf("Key: %v not in tD and not in t2", key)
+	//	}
+	//
+	//	if in_tD && in_t2 {
+	//		fmt.Printf("Key: %v in tD and t2", key)
+	//	}
+	//}
+	//
+	//// Check that all nodes in t2 are either in tD or t1 but not both
+	//for _, key := range *(avl2.GetInorderTraversal(t2NodeType)) {
+	//	in_tD := avl2.IsInTree(tD, &key)
+	//	in_t1 := avl2.IsInTree(t2NodeType, &key)
+	//
+	//	if !in_tD && !in_t1 {
+	//		fmt.Printf("Key: %v not in tD and not in t1", key)
+	//	}
+	//
+	//	if in_tD && in_t1 {
+	//		fmt.Printf("Key: %v in tD and t1", key)
+	//	}
+	//}
 
-	TRL := avl2.Node{
-		Key:     []byte{136},
-		Value:   []byte{136},
-		Left:    &LF,
-		Right:   nil,
-		Nested:  nil,
-		Height:  2,
-		Path:    "",
-		Exposed: false,
-	}
-
-	TRR := avl2.Node{
-		Key:     []byte{188, 32},
-		Value:   []byte{188, 32},
-		Left:    nil,
-		Right:   nil,
-		Nested:  nil,
-		Height:  1,
-		Path:    "",
-		Exposed: false,
-	}
-
-	TR := avl2.Node{
-		Key:     []byte{188},
-		Value:   []byte{188},
-		Left:    &TRL,
-		Right:   &TRR,
-		Nested:  nil,
-		Height:  3,
-		Path:    "",
-		Exposed: false,
-	}
-
-	avl2.TestJoinLeft([]byte{0, 100}, []byte{0, 100}, &TL, &TR, nil)
+	//TL := avl2.Node{
+	//	Key:     []byte{0, 0},
+	//	Value:   []byte{0, 0},
+	//	Left:    nil,
+	//	Right:   nil,
+	//	Nested:  nil,
+	//	Height:  1,
+	//	Path:    "",
+	//	Exposed: false,
+	//}
+	//
+	//LF := avl2.Node{
+	//	Key:     []byte{29, 255},
+	//	Value:   []byte{29, 255},
+	//	Left:    nil,
+	//	Right:   nil,
+	//	Nested:  nil,
+	//	Height:  1,
+	//	Path:    "",
+	//	Exposed: false,
+	//}
+	//
+	//TRL := avl2.Node{
+	//	Key:     []byte{136},
+	//	Value:   []byte{136},
+	//	Left:    &LF,
+	//	Right:   nil,
+	//	Nested:  nil,
+	//	Height:  2,
+	//	Path:    "",
+	//	Exposed: false,
+	//}
+	//
+	//TRR := avl2.Node{
+	//	Key:     []byte{188, 32},
+	//	Value:   []byte{188, 32},
+	//	Left:    nil,
+	//	Right:   nil,
+	//	Nested:  nil,
+	//	Height:  1,
+	//	Path:    "",
+	//	Exposed: false,
+	//}
+	//
+	//TR := avl2.Node{
+	//	Key:     []byte{188},
+	//	Value:   []byte{188},
+	//	Left:    &TRL,
+	//	Right:   &TRR,
+	//	Nested:  nil,
+	//	Height:  3,
+	//	Path:    "",
+	//	Exposed: false,
+	//}
+	//
+	//avl2.TestJoinLeft([]byte{0, 100}, []byte{0, 100}, &TL, &TR, nil)
 }

@@ -11,6 +11,7 @@ package avl
 
 import (
 	"bytes"
+	"fmt"
 )
 
 type Node struct {
@@ -164,6 +165,7 @@ func split(tree *Node, k []byte) (*Node, bool, *Node) {
 	}
 	if bytes.Compare(k, m) == -1 {
 		ll, b, lr := split(l, k)
+		fmt.Println(ll, lr)
 		return ll, b, join(lr, m, r)
 	}
 	rl, b, rr := split(r, k)

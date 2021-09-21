@@ -262,11 +262,11 @@ func sortArray(arr *[][]byte) {
 	})
 }
 
-func printTree(root *Node, space string) {
+func PrintTree(root *Node, space string) {
 	if root != nil {
 		fmt.Println(space, root)
-		printTree(root.Left, space+space)
-		printTree(root.Right, space+space)
+		PrintTree(root.Left, space+space)
+		PrintTree(root.Right, space+space)
 	}
 }
 

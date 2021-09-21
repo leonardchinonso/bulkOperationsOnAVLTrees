@@ -259,3 +259,11 @@ func IsValidBST(root *Node) bool {
 
 	return true
 }
+
+func printTree(root *Node, space string) {
+	if root != nil {
+		fmt.Println(space, root)
+		printTree(root.Left, space+space)
+		printTree(root.Right, space+space)
+	}
+}

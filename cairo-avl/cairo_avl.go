@@ -2,8 +2,10 @@ package cairo_avl
 
 import (
 	"bytes"
-	"fmt"
 )
+
+var numOfExposedNodes int
+var numOfExposedNodesInDifference int
 
 // HeightOf Get height of a node
 // This function exists because the join method can take a null Node pointer
@@ -16,26 +18,16 @@ func HeightOf(node *Node) int {
 }
 
 func balancedHeight(hL int, hR int) int {
-	fmt.Println("checking ", hL, hR)
 	if hL == hR {
 		return hL + 1
 	} else if hL == hR+1 {
 		return hL + 1
-	} else if hR == hL+1 {
-		return hR + 1
-	} else {
-		fmt.Println(hL, hR, "panicking")
-		panic("Tree is unbalanced!")
 	}
+	return hR + 1
 }
 
 // rotateRight rotates a node to the right to maintain the AVL balance criteria
 func rotateLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node) (int, *Node) {
-	fmt.Println()
-	fmt.Println("Rotating nodes:... ")
-	printTree(TL, "  ")
-	fmt.Println()
-	printTree(TR, "  ")
 	kR, vR, TRL, TRR, TRN := exposeNode(TR)
 	hL := HeightOf(TL)
 	hRL := HeightOf(TRL)
@@ -82,10 +74,6 @@ func joinRight(k []byte, v []byte, TL *Node, TR *Node, TN *Node) (int, *Node) {
 }
 
 func joinLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node) (int, *Node) {
-	fmt.Println("Checking the join left")
-	fmt.Println(k, v, TL, TR, TN)
-	printTree(TL, "  ")
-	printTree(TR, "  ")
 	kR, vR, TRL, TRR, TRN := exposeNode(TR)
 	hRL := HeightOf(TRL)
 	hL := HeightOf(TL)
@@ -108,15 +96,9 @@ func joinLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node) (int, *Node) {
 }
 
 func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN *Node) *Node {
-	fmt.Println("About to join")
-	fmt.Println(k, v, TL, TR)
-	fmt.Println()
 	hL := HeightOf(TL)
 	hR := HeightOf(TR)
 	if hL > hR+1 {
-		printTree(TL, "  ")
-		fmt.Println()
-		printTree(TR, "  ")
 		_, T := joinRight(k, v, TL, TR, TN)
 		return T
 	}
@@ -124,7 +106,7 @@ func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN
 		_, T := joinLeft(k, v, TL, TR, TN)
 		return T
 	}
-	N := Union(Difference(TN, DU), DD)
+	N, _ := Union(Difference(TN, DU), DD)
 	h := balancedHeight(hL, hR)
 	return NewNode(k, v, h, TL, TR, N)
 }
@@ -132,7 +114,7 @@ func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN
 func splitLast(T *Node) (*Node, []byte, []byte, *Node) {
 	m, v, L, R, N := exposeNode(T)
 	if R == nil {
-		return nil, m, v, N
+		return L, m, v, N
 	}
 
 	TP, kP, vP, NP := splitLast(R)
@@ -166,26 +148,20 @@ func split(t *Node, k []byte) (*Node, *Node, *Node) {
 	return join(m, v, nil, nil, L, RL, N), RR, RN
 }
 
-func Union(T0 *Node, D *DictNode) *Node {
-	fmt.Println("union of: ... ")
-	printTree(T0, "  ")
-	fmt.Println()
-	printDictTree(D, "  ")
+func Union(T0 *Node, D *DictNode) (*Node, int) {
 	if T0 == nil {
-		return D.ConvertToNode()
+		return D.ConvertToNode(), numOfExposedNodes
 	}
 	if D == nil {
-		return T0
+		return T0, numOfExposedNodes
 	}
 
 	k, v, DL, DR, DU, DD := exposeDict(D)
 	TL, TR, TN := split(T0, k)
-	fmt.Println("Printing TL")
-	printTree(TL, "  ")
-	L := Union(TL, DL)
-	R := Union(TR, DR)
+	L, _ := Union(TL, DL)
+	R, _ := Union(TR, DR)
 	joined := join(k, v, DU, DD, L, R, TN)
-	return joined
+	return joined, numOfExposedNodes
 }
 
 func Difference(T0 *Node, D *DictNode) *Node {

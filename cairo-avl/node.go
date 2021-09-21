@@ -1,6 +1,9 @@
 package cairo_avl
 
-import "math"
+import (
+	"crypto/md5"
+	"math"
+)
 
 // Node node representation of the data in a TreeNode object format
 type Node struct {
@@ -34,20 +37,22 @@ func NewNode(key []byte, value []byte, h int, left, right, nested *Node) *Node {
 	node.Right = right
 	node.Nested = nested
 	node.Height = h
-	node.Exposed = false
+	node.Exposed = true
 	return node
 }
 
-func (n *Node) convertToDictNode() *DictNode {
+func (n *Node) ConvertToDictNode() *DictNode {
 	if n == nil {
 		return nil
 	}
-	return NewDictNode(n.Key, n.Value, n.Height, n.Left.convertToDictNode(), n.Right.convertToDictNode())
+	return NewDictNode(n.Key, n.Value, n.Height, n.Left.ConvertToDictNode(), n.Right.ConvertToDictNode())
 }
 
-// exposeNode opens up a dict type
+// exposeNode opens up a node type
 func exposeNode(tree *Node) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
 	if tree != nil {
+		numOfExposedNodes++
+		md5.Sum(tree.Value)
 		tree.Exposed = true
 		return tree.Key, tree.Value, tree.Left, tree.Right, tree.Nested
 	}
@@ -72,7 +77,9 @@ func BuildTreeFromInorder(arr *[][]byte) *Node {
 	sortArray(arr)
 	n := len(*arr)
 	height := int(math.Floor(math.Log2(float64(n))))
-	return _buildTreeFromInorder(arr, height+1)
+	root := _buildTreeFromInorder(arr, height+1)
+	setExposure(root, false)
+	return root
 }
 
 func _buildTreeFromInorder(arr *[][]byte, height int) *Node {
@@ -103,4 +110,15 @@ func CreateTree(arr *[][]byte) *Node {
 	root := _createTree(arr)
 	setExposure(root, false)
 	return root
+}
+
+func CountNumberOfNewHashes(root *Node, newNodesCount *int) {
+	if root == nil {
+		return
+	}
+	if root.Exposed {
+		*newNodesCount += 1
+	}
+	CountNumberOfNewHashes(root.Left, newNodesCount)
+	CountNumberOfNewHashes(root.Right, newNodesCount)
 }

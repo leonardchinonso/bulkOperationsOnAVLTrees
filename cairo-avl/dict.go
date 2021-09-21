@@ -49,7 +49,7 @@ func CreateDictTree(arr *[][]byte) *DictNode {
 
 	var root *DictNode
 	if temp != nil {
-		root = temp.convertToDictNode()
+		root = temp.ConvertToDictNode()
 	}
 	return root
 }
@@ -58,7 +58,7 @@ func BuildDictTreeFromInorder(arr *[][]byte) *DictNode {
 	temp := BuildTreeFromInorder(arr)
 	var root *DictNode
 	if temp != nil {
-		root = temp.convertToDictNode()
+		root = temp.ConvertToDictNode()
 	}
 	return root
 }

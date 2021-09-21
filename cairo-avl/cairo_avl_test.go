@@ -11,18 +11,23 @@ func FuzzUnion(f *testing.F) {
 	f.Add([]byte{1, 2, 3, 4, 5, 6}, []byte{14, 15, 16, 17, 18, 19})
 
 	f.Fuzz(func(t *testing.T, input1 []byte, input2 []byte) {
+		numOfExposedNodes = 0
 		set := make(map[string]bool)
 
 		b1 := *(EmbedByteArray(input1, &set))
 		b2 := *(EmbedByteArray(input2, &set))
 
-		fmt.Println(b1)
-		fmt.Println(b2)
-
 		t1 := BuildTreeFromInorder(&b1)
 		D := BuildDictTreeFromInorder(&b2)
 
-		tU := Union(t1, D)
+		tU, _ := Union(t1, D)
+
+		numOfNodes := len(b1) + len(b2)
+
+		count := 0
+		CountNumberOfNewHashes(tU, &count)
+		fmt.Printf("Hash count for tree with size: %v is %v \n", numOfNodes, count+numOfExposedNodes)
+		fmt.Println()
 
 		// Check that all nodes in tU are either in t1 or t2
 		for _, key := range *(GetInorderTraversal(tU)) {
@@ -59,55 +64,46 @@ func FuzzUnion(f *testing.F) {
 	})
 }
 
-func FuzzDifference(f *testing.F) {
-	f.Add([]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20})
-
-	f.Fuzz(func(t *testing.T, b []byte) {
-		set := make(map[string]bool)
-
-		temp1, temp2 := SplitByteArray(&b)
-
-		b1 := make([][]byte, 0)
-		if temp1 != nil {
-			b1 = *(EmbedByteArray(*temp1, &set))
-		}
-
-		b2 := make([][]byte, 0)
-		if temp1 != nil {
-			b2 = *(EmbedByteArray(*temp2, &set))
-		}
-
-		t1 := CreateTree(&b1)
-		t2 := CreateTree(&b2)
-
-		tD := Difference(t1, t2.convertToDictNode())
-
-		// Check that all nodes in t1 are either in tD or t2 but not both
-		for _, key := range *(GetInorderTraversal(t1)) {
-			in_tD := IsInTree(tD, &key)
-			in_t2 := IsInTree(t2, &key)
-
-			if !in_tD && !in_t2 {
-				t.Fatalf("Key: %v not in tD and not in t2", key)
-			}
-
-			if in_tD && in_t2 {
-				t.Fatalf("Key: %v in tD and t2", key)
-			}
-		}
-
-		// Check that all nodes in t2 are either in tD or t1 but not both
-		for _, key := range *(GetInorderTraversal(t2)) {
-			in_tD := IsInTree(tD, &key)
-			in_t1 := IsInTree(t2, &key)
-
-			if !in_tD && !in_t1 {
-				t.Fatalf("Key: %v not in tD and not in t1", key)
-			}
-
-			if in_tD && in_t1 {
-				t.Fatalf("Key: %v in tD and t1", key)
-			}
-		}
-	})
-}
+//func FuzzDifference(f *testing.F) {
+//	f.Add([]byte{1, 2, 3, 4, 5, 6}, []byte{7, 8, 9, 10, 11, 12, 13, 14})
+//
+//	f.Fuzz(func(t *testing.T,  input1 []byte, input2 []byte) {
+//		set := make(map[string]bool)
+//
+//		b1 := *(EmbedByteArray(input1, &set))
+//		b2 := *(EmbedByteArray(input2, &set))
+//
+//		t1 := CreateTree(&b1)
+//		t2 := CreateTree(&b2)
+//
+//		tD := Difference(t1, t2.ConvertToDictNode())
+//
+//		// Check that all nodes in t1 are either in tD or t2 but not both
+//		for _, key := range *(GetInorderTraversal(t1)) {
+//			in_tD := IsInTree(tD, &key)
+//			in_t2 := IsInTree(t2, &key)
+//
+//			if !in_tD && !in_t2 {
+//				t.Fatalf("Key: %v not in tD and not in t2", key)
+//			}
+//
+//			if in_tD && in_t2 {
+//				t.Fatalf("Key: %v in tD and t2", key)
+//			}
+//		}
+//
+//		// Check that all nodes in t2 are either in tD or t1 but not both
+//		for _, key := range *(GetInorderTraversal(t2)) {
+//			in_tD := IsInTree(tD, &key)
+//			in_t1 := IsInTree(t2, &key)
+//
+//			if !in_tD && !in_t1 {
+//				t.Fatalf("Key: %v not in tD and not in t1", key)
+//			}
+//
+//			if in_tD && in_t1 {
+//				t.Fatalf("Key: %v in tD and t1", key)
+//			}
+//		}
+//	})
+//}
