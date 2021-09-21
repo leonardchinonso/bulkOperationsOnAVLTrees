@@ -5,7 +5,6 @@ import (
 )
 
 var numOfExposedNodes int
-var numOfExposedNodesInDifference int
 
 // HeightOf Get height of a node
 // This function exists because the join method can take a null Node pointer
