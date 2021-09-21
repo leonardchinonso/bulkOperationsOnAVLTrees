@@ -1,7 +1,7 @@
-#BULK OPERATIONS ON AVL TREES
+# BULK OPERATIONS ON AVL TREES
 
 ---
-##STRUCTURE
+## STRUCTURE
 This repository is structured as follows:
     
             avl
@@ -24,15 +24,15 @@ The `cairo-avl` package contains code relating to the variant implementation con
 The `main.go` file imports both packages for use in comparison of how they work.
 
 
-##HOW TO RUN
-###BUILDING CODE
+## HOW TO RUN
+### BUILDING CODE
 To run the `main.go` file, in the terminal, from the root directory, run:
 
     go run main.go
 
 The `main.go` file can be used to run quick tests to observe any cases, feel free to add your code to test specific outcomes.
 
-###RUNNING TESTS
+### RUNNING TESTS
 In the `*_test.go` files, there are fuzz tests written for the `union` and `difference` bulk operations. To run any of these fuzz tests,
 from the root directory, navigate to the package/folder containing the `*_test.go` file and run the command:
 
@@ -48,7 +48,7 @@ Then run the `FuzzUnion` fuzz tests with:
 
 Then you should see the output in the terminal
 
-##COUNTING HASHES
+## COUNTING HASHES
 The hashes were counted in two parts, using an unorthodox method.
 
 First, for two trees as inputs to the bulk operation functions, say `t1` and `t2`, all the nodes in `t1` and `t2` were intialised with their
