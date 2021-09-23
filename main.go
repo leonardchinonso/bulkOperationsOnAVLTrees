@@ -73,6 +73,8 @@ func main() {
 
 	newNodesCount := 0
 	avl2.CountNumberOfNewHashes(tU, &newNodesCount)
+	fmt.Println("Number of nodes in the original tree: ", len(b1))
+	fmt.Println("Number of nodes in the update tree: ", len(b2))
 	fmt.Println("number of new nodes created: ", newNodesCount)
 	fmt.Println("number of nodes exposed in union: ", numOfExposedNodesInUnion)
 
