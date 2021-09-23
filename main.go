@@ -60,6 +60,10 @@ func main() {
 	b1 := *(avl2.EmbedByteArray(convertToBytes(os.Args[1]), &set))
 	b2 := *(avl2.EmbedByteArray(convertToBytes(os.Args[2]), &set))
 
+	if len(b1) == 0 || len(b2) == 0 {
+		panic("One of the input files does not have enough unique data!")
+	}
+
 	t1 := avl2.BuildTreeFromInorder(&b1)
 	t2 := avl2.BuildDictTreeFromInorder(&b2)
 
@@ -98,19 +102,17 @@ func main() {
 		}
 	}
 
-	if !avl2.IsBalanced(tU) {
-		fmt.Println("Unbalanced")
+	if !avl2.IsValidBST(tU) {
+		fmt.Println("tU is an invalid BST")
 	}
 
-	if !avl2.IsValidBST(tU) {
-		fmt.Println("Invalid BST")
+	if !avl2.IsBalanced(tU) {
+		fmt.Println("tU is an unbalanced BST")
 	}
 
 	// DIFFERENCE: Yet to count the hashes for the difference operation
 	fmt.Println()
-	fmt.Println("Trying not regs")
 	tD := avl2.Difference(t1, t2)
-	fmt.Println(tD)
 
 	// Check that all nodes in t1 are either in tD or t2 but not both
 	for _, key := range *(avl2.GetInorderTraversal(t1)) {
@@ -138,6 +140,14 @@ func main() {
 		if in_tD && in_t1 {
 			fmt.Printf("Key: %v in tD and t1", key)
 		}
+	}
+
+	if !avl2.IsValidBST(tD) {
+		fmt.Println("tD is an invalid BST")
+	}
+
+	if !avl2.IsBalanced(tD) {
+		fmt.Println("tD is an unbalanced BST")
 	}
 
 }
