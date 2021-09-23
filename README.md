@@ -28,9 +28,9 @@ The `main.go` file imports both packages for use in comparison of how they work.
 ### BUILDING CODE
 To run the `main.go` file, in the terminal, from the root directory, run:
 
-    > go run main.go
+    > go run main.go <fileName1> <fileName2>
 
-The `main.go` file can be used to run quick tests to observe any cases, feel free to add your code to test specific outcomes.
+This command takes in two files as arguments and uses their byte representation as the input tree and the update tree respectively. The `main.go` file can be used to run quick tests to observe any cases, feel free to add your code to test specific outcomes.
 
 ### RUNNING TESTS
 In the `*_test.go` files, there are fuzz tests written for the `union` and `difference` bulk operations. To run any of these fuzz tests,
