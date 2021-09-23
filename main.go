@@ -1,37 +1,71 @@
 package main
 
 import (
+	"bufio"
 	avl2 "bulkOperations/cairo-avl"
+	"bytes"
 	"fmt"
+	"io"
+	"os"
 )
 
+func handleError(err error) {
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func convertToBytes(fileName string) []byte {
+	file, err := os.Open(fileName)
+	handleError(err)
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Println("Can't close file")
+		}
+	}(file)
+
+	reader := bufio.NewReader(file)
+	buffer := bytes.NewBuffer(make([]byte, 0))
+
+	var chunk []byte
+	var eol bool
+	byteArr := make([]byte, 0)
+
+	for {
+		if chunk, eol, err = reader.ReadLine(); err != nil {
+			break
+		}
+		buffer.Write(chunk)
+		if !eol {
+			byteArr = append(byteArr, buffer.Bytes()...)
+			buffer.Reset()
+		}
+	}
+
+	if err == io.EOF {
+		err = nil
+	}
+
+	return byteArr
+}
+
 func main() {
+	if len(os.Args) != 3 {
+		panic("Invalid number of arguments")
+	}
+
 	set := make(map[string]bool)
 
-	//temp1, temp2 := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, []byte{14, 15, 16, 17, 18, 19, 20}
-	//temp1, temp2 := []byte{1, 2, 3, 4, 5, 6}, []byte{14, 15, 16, 17, 18, 19}
-	//temp1, temp2 := []byte("\x1d\xff\xbc \x88"), []byte("\x00\x00\x00d\xbc")
-	temp1, temp2 := []byte("\x1d\xff\xbc \x88"), []byte("\x00\x00\x00d\xbc")
-
-	b1 := make([][]byte, 0)
-	if temp1 != nil {
-		b1 = *(avl2.EmbedByteArray(temp1, &set))
-	}
-
-	b2 := make([][]byte, 0)
-	if temp2 != nil {
-		b2 = *(avl2.EmbedByteArray(temp2, &set))
-	}
+	b1 := *(avl2.EmbedByteArray(convertToBytes(os.Args[1]), &set))
+	b2 := *(avl2.EmbedByteArray(convertToBytes(os.Args[2]), &set))
 
 	t1 := avl2.BuildTreeFromInorder(&b1)
 	t2 := avl2.BuildDictTreeFromInorder(&b2)
+
 	t2NodeType := (*t2).ConvertToNode()
 
-	avl2.VisualizeNodeTree("t1", t1)
-	avl2.VisualizeNodeTree("t2", t2NodeType)
-
 	tU, numOfExposedNodesInUnion := avl2.Union(t1, t2)
-	avl2.VisualizeNodeTree("tu", tU)
 
 	newNodesCount := 0
 	avl2.CountNumberOfNewHashes(tU, &newNodesCount)
@@ -64,99 +98,46 @@ func main() {
 		}
 	}
 
-	//tt1 := avl.CreateTree(&b1)
-	//tt2 := avl.CreateTree(&b2)
-	//
-	//tDD := avl.Difference(tt1, tt2)
-	//avl.Visualize("tdd", tDD)
-	//
-	//fmt.Println()
-	//fmt.Println("Trying not regs")
-	//tD := avl2.Difference(t1, t2)
-	//avl2.VisualizeNodeTree("td", tD)
+	if !avl2.IsBalanced(tU) {
+		fmt.Println("Unbalanced")
+	}
 
-	//// Check that all nodes in t1 are either in tD or t2 but not both
-	//for _, key := range *(avl2.GetInorderTraversal(t1)) {
-	//	in_tD := avl2.IsInTree(tD, &key)
-	//	in_t2 := avl2.IsInTree(t2NodeType, &key)
-	//
-	//	if !in_tD && !in_t2 {
-	//		fmt.Printf("Key: %v not in tD and not in t2", key)
-	//	}
-	//
-	//	if in_tD && in_t2 {
-	//		fmt.Printf("Key: %v in tD and t2", key)
-	//	}
-	//}
-	//
-	//// Check that all nodes in t2 are either in tD or t1 but not both
-	//for _, key := range *(avl2.GetInorderTraversal(t2NodeType)) {
-	//	in_tD := avl2.IsInTree(tD, &key)
-	//	in_t1 := avl2.IsInTree(t2NodeType, &key)
-	//
-	//	if !in_tD && !in_t1 {
-	//		fmt.Printf("Key: %v not in tD and not in t1", key)
-	//	}
-	//
-	//	if in_tD && in_t1 {
-	//		fmt.Printf("Key: %v in tD and t1", key)
-	//	}
-	//}
+	if !avl2.IsValidBST(tU) {
+		fmt.Println("Invalid BST")
+	}
 
-	//TL := avl2.Node{
-	//	Key:     []byte{0, 0},
-	//	Value:   []byte{0, 0},
-	//	Left:    nil,
-	//	Right:   nil,
-	//	Nested:  nil,
-	//	Height:  1,
-	//	Path:    "",
-	//	Exposed: false,
-	//}
-	//
-	//LF := avl2.Node{
-	//	Key:     []byte{29, 255},
-	//	Value:   []byte{29, 255},
-	//	Left:    nil,
-	//	Right:   nil,
-	//	Nested:  nil,
-	//	Height:  1,
-	//	Path:    "",
-	//	Exposed: false,
-	//}
-	//
-	//TRL := avl2.Node{
-	//	Key:     []byte{136},
-	//	Value:   []byte{136},
-	//	Left:    &LF,
-	//	Right:   nil,
-	//	Nested:  nil,
-	//	Height:  2,
-	//	Path:    "",
-	//	Exposed: false,
-	//}
-	//
-	//TRR := avl2.Node{
-	//	Key:     []byte{188, 32},
-	//	Value:   []byte{188, 32},
-	//	Left:    nil,
-	//	Right:   nil,
-	//	Nested:  nil,
-	//	Height:  1,
-	//	Path:    "",
-	//	Exposed: false,
-	//}
-	//
-	//TR := avl2.Node{
-	//	Key:     []byte{188},
-	//	Value:   []byte{188},
-	//	Left:    &TRL,
-	//	Right:   &TRR,
-	//	Nested:  nil,
-	//	Height:  3,
-	//	Path:    "",
-	//	Exposed: false,
-	//}
-	//
-	//avl2.TestJoinLeft([]byte{0, 100}, []byte{0, 100}, &TL, &TR, nil)
+	// DIFFERENCE: Yet to count the hashes for the difference operation
+	fmt.Println()
+	fmt.Println("Trying not regs")
+	tD := avl2.Difference(t1, t2)
+	fmt.Println(tD)
+
+	// Check that all nodes in t1 are either in tD or t2 but not both
+	for _, key := range *(avl2.GetInorderTraversal(t1)) {
+		in_tD := avl2.IsInTree(tD, &key)
+		in_t2 := avl2.IsInTree(t2NodeType, &key)
+
+		if !in_tD && !in_t2 {
+			fmt.Printf("Key: %v not in tD and not in t2", key)
+		}
+
+		if in_tD && in_t2 {
+			fmt.Printf("Key: %v in tD and t2", key)
+		}
+	}
+
+	// Check that all nodes in t2 are either in tD or t1 but not both
+	for _, key := range *(avl2.GetInorderTraversal(t2NodeType)) {
+		in_tD := avl2.IsInTree(tD, &key)
+		in_t1 := avl2.IsInTree(t2NodeType, &key)
+
+		if !in_tD && !in_t1 {
+			fmt.Printf("Key: %v not in tD and not in t1", key)
+		}
+
+		if in_tD && in_t1 {
+			fmt.Printf("Key: %v in tD and t1", key)
+		}
+	}
+
 }
