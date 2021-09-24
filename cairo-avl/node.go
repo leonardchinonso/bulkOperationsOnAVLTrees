@@ -1,7 +1,6 @@
 package cairo_avl
 
 import (
-	"crypto/md5"
 	"math"
 )
 
@@ -51,9 +50,10 @@ func (n *Node) ConvertToDictNode() *DictNode {
 // exposeNode opens up a node type
 func exposeNode(tree *Node) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
 	if tree != nil {
-		numOfExposedNodes++
-		md5.Sum(tree.Value)
-		tree.Exposed = true
+		if !tree.Exposed {
+			numOfExposedNodes++
+			tree.Exposed = true
+		}
 		return tree.Key, tree.Value, tree.Left, tree.Right, tree.Nested
 	}
 	return []byte{}, []byte{}, nil, nil, nil
@@ -117,7 +117,7 @@ func CountNumberOfNewHashes(root *Node, newNodesCount *int) {
 		return
 	}
 	if root.Exposed {
-		*newNodesCount += 1
+		*newNodesCount++
 	}
 	CountNumberOfNewHashes(root.Left, newNodesCount)
 	CountNumberOfNewHashes(root.Right, newNodesCount)

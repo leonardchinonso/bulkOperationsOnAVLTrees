@@ -19,46 +19,41 @@ func absInt(num int) int {
 	return num
 }
 
-func MaxInt(height1 int, height2 int) int {
-	if height1 > height2 {
-		return height1
-	}
-
-	return height2
-}
-
-// SplitByteArray splits a byte slice into two parts, one part having a length 3/4 of the original slice
-func SplitByteArray(b *[]byte) (*[]byte, *[]byte) {
-	n := len(*b)
-
-	if n < 4 {
-		return nil, nil
-	}
-
-	mark := n / 4
-	if n%4 != 0 {
-		mark += 1
-	}
-
-	first := (*b)[:mark+1]
-	second := (*b)[mark+1:]
-
-	return &first, &second
-}
+//// EmbedByteArray pairs bytes up as single values and removes duplicate byte pair entries
+//func EmbedByteArray(b []byte, set *map[string]bool) *[][]byte {
+//	var res [][]byte
+//	for i := 0; i < len(b); i += 2 {
+//		if i == len(b)-1 {
+//			if _, ok := (*set)[string([]byte{b[i]})]; !ok {
+//				res = append(res, []byte{b[i]})
+//				(*set)[string([]byte{b[i]})] = true
+//			}
+//		} else {
+//			if _, ok := (*set)[string([]byte{b[i], b[i+1]})]; !ok {
+//				res = append(res, []byte{b[i], b[i+1]})
+//				(*set)[string([]byte{b[i], b[i+1]})] = true
+//			}
+//		}
+//	}
+//
+//	return &res
+//}
 
 // EmbedByteArray pairs bytes up as single values and removes duplicate byte pair entries
-func EmbedByteArray(b []byte, set *map[string]bool) *[][]byte {
+func EmbedByteArray(b []byte) *[][]byte {
+	set := make(map[string]bool)
+
 	var res [][]byte
-	for i := 0; i < len(b); i += 2 {
-		if i == len(b)-1 {
-			if _, ok := (*set)[string([]byte{b[i]})]; !ok {
-				res = append(res, []byte{b[i]})
-				(*set)[string([]byte{b[i]})] = true
+	for i := 0; i < len(b); i += 4 {
+		if len(b)-i <= 4 {
+			if _, ok := set[string(b[i:])]; !ok {
+				res = append(res, b[i:])
+				set[string(b[i:])] = true
 			}
 		} else {
-			if _, ok := (*set)[string([]byte{b[i], b[i+1]})]; !ok {
-				res = append(res, []byte{b[i], b[i+1]})
-				(*set)[string([]byte{b[i], b[i+1]})] = true
+			if _, ok := set[string(b[i:i+4])]; !ok {
+				res = append(res, b[i:i+4])
+				set[string(b[i:i+4])] = true
 			}
 		}
 	}
@@ -276,8 +271,4 @@ func printDictTree(root *DictNode, space string) {
 		printDictTree(root.Left, space+space)
 		printDictTree(root.Right, space+space)
 	}
-}
-
-func TestJoinLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node) (int, *Node) {
-	return joinLeft(k, v, TL, TR, TN)
 }

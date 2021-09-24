@@ -35,7 +35,7 @@ func SplitByteArray(b *[]byte) (*[]byte, *[]byte) {
 
 	mark := n / 4
 	if n%4 != 0 {
-		mark += 1
+		mark++
 	}
 
 	first := (*b)[:mark+1]

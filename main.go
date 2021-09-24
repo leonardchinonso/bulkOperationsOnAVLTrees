@@ -55,10 +55,8 @@ func main() {
 		panic("Invalid number of arguments")
 	}
 
-	set := make(map[string]bool)
-
-	b1 := *(avl2.EmbedByteArray(convertToBytes(os.Args[1]), &set))
-	b2 := *(avl2.EmbedByteArray(convertToBytes(os.Args[2]), &set))
+	b1 := *(avl2.EmbedByteArray(convertToBytes(os.Args[1])))
+	b2 := *(avl2.EmbedByteArray(convertToBytes(os.Args[2])))
 
 	if len(b1) == 0 || len(b2) == 0 {
 		panic("One of the input files does not have enough unique data!")

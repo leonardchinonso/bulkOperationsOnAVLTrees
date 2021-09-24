@@ -12,10 +12,9 @@ func FuzzUnion(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, input1 []byte, input2 []byte) {
 		numOfExposedNodes = 0
-		set := make(map[string]bool)
 
-		b1 := *(EmbedByteArray(input1, &set))
-		b2 := *(EmbedByteArray(input2, &set))
+		b1 := *(EmbedByteArray(input1))
+		b2 := *(EmbedByteArray(input2))
 
 		t1 := BuildTreeFromInorder(&b1)
 		D := BuildDictTreeFromInorder(&b2)
@@ -68,10 +67,8 @@ func FuzzUnion(f *testing.F) {
 //	f.Add([]byte{1, 2, 3, 4, 5, 6}, []byte{7, 8, 9, 10, 11, 12, 13, 14})
 //
 //	f.Fuzz(func(t *testing.T,  input1 []byte, input2 []byte) {
-//		set := make(map[string]bool)
-//
-//		b1 := *(EmbedByteArray(input1, &set))
-//		b2 := *(EmbedByteArray(input2, &set))
+//		b1 := *(EmbedByteArray(input1))
+//		b2 := *(EmbedByteArray(input2))
 //
 //		t1 := CreateTree(&b1)
 //		t2 := CreateTree(&b2)
