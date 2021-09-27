@@ -221,8 +221,8 @@ func IsBalanced(root *Node) bool {
 		return true
 	}
 
-	leftHeight := HeightOf(root.Left)
-	rightHeight := HeightOf(root.Right)
+	leftHeight := HeightOf(root.Left, nil)
+	rightHeight := HeightOf(root.Right, nil)
 
 	if absInt(leftHeight-rightHeight) <= 1 && IsBalanced(root.Left) && IsBalanced(root.Right) {
 		return true
