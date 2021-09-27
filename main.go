@@ -2,11 +2,12 @@ package main
 
 import (
 	"bufio"
-	avl2 "bulkOperations/cairo-avl"
 	"bytes"
 	"fmt"
 	"io"
 	"os"
+
+	avl2 "github.com/leonardchinonso/bulkOperations/cairo-avl"
 )
 
 func handleError(err error) {
