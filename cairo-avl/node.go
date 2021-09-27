@@ -48,10 +48,10 @@ func (n *Node) ConvertToDictNode() *DictNode {
 }
 
 // exposeNode opens up a node type
-func exposeNode(tree *Node) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
+func exposeNode(tree *Node, numOfExposedNodes *int) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
 	if tree != nil {
 		if !tree.Exposed {
-			numOfExposedNodes++
+			*numOfExposedNodes++
 			tree.Exposed = true
 		}
 		return tree.Key, tree.Value, tree.Left, tree.Right, tree.Nested
@@ -61,8 +61,9 @@ func exposeNode(tree *Node) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
 
 // insertNode inserts a node into the tree
 func insertNode(T *Node, k []byte) *Node {
-	TL, TR, TN := split(T, k)
-	return join(k, k, nil, nil, TL, TR, TN)
+	numOfExposedNodes := 0
+	TL, TR, TN := split(T, k, &numOfExposedNodes)
+	return join(k, k, nil, nil, TL, TR, TN, &numOfExposedNodes)
 }
 
 func _createTree(arr *[][]byte) *Node {

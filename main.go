@@ -68,7 +68,8 @@ func main() {
 
 	t2NodeType := (*t2).ConvertToNode()
 
-	tU, numOfExposedNodesInUnion := avl2.Union(t1, t2)
+	numOfExposedNodesInUnion := 0
+	tU := avl2.Union(t1, t2, &numOfExposedNodesInUnion)
 
 	newNodesCount := 0
 	avl2.CountNumberOfNewHashes(tU, &newNodesCount)
@@ -113,7 +114,8 @@ func main() {
 
 	// DIFFERENCE: Yet to count the hashes for the difference operation
 	fmt.Println()
-	tD := avl2.Difference(t1, t2)
+	numOfExposedNodesInDifference := 0
+	tD := avl2.Difference(t1, t2, &numOfExposedNodesInDifference)
 
 	// Check that all nodes in t1 are either in tD or t2 but not both
 	for _, key := range *(avl2.GetInorderTraversal(t1)) {
