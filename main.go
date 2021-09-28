@@ -63,19 +63,22 @@ func main() {
 		panic("One of the input files does not have enough unique data!")
 	}
 
+	fmt.Println("# UNION:")
 	t1 := avl2.BuildTreeFromInorder(&b1)
 	t2 := avl2.BuildDictTreeFromInorder(&b2)
 
 	t2NodeType := (*t2).ConvertToNode()
 
-	tU, numOfExposedNodesInUnion := avl2.Union(t1, t2)
-
-	newNodesCount := 0
-	avl2.CountNumberOfNewHashes(tU, &newNodesCount)
+	numOfExposedNodesInUnion := 0
+	numOfHeightTakenNodesInUnion := 0
+	newNodesCountInUnion := 0
+	tU := avl2.Union(t1, t2, &numOfExposedNodesInUnion, &numOfHeightTakenNodesInUnion)
+	avl2.CountNumberOfNewHashes(tU, &newNodesCountInUnion)
 	fmt.Println("Number of nodes in the original tree: ", len(b1))
 	fmt.Println("Number of nodes in the update tree: ", len(b2))
-	fmt.Println("number of new nodes created: ", newNodesCount)
+	fmt.Println("number of re-hashes to be made: ", newNodesCountInUnion)
 	fmt.Println("number of nodes exposed in union: ", numOfExposedNodesInUnion)
+	fmt.Println("number of nodes with height taken in union: ", numOfHeightTakenNodesInUnion)
 
 	// Check that all nodes in tU are either in t1 or t2
 	for _, key := range *(avl2.GetInorderTraversal(tU)) {
@@ -113,33 +116,49 @@ func main() {
 
 	// DIFFERENCE: Yet to count the hashes for the difference operation
 	fmt.Println()
-	tD := avl2.Difference(t1, t2)
+	fmt.Println("# DIFFERENCE:")
+
+	tt1 := avl2.BuildTreeFromInorder(&b1)
+	tt2 := avl2.BuildDictTreeFromInorder(&b2)
+
+	tt2NodeType := (*tt2).ConvertToNode()
+
+	numOfExposedNodesInDifference := 0
+	numOfHeightTakenNodesInDifference := 0
+	newNodesCountInDifference := 0
+	tD := avl2.Difference(tt1, tt2, &numOfExposedNodesInDifference, &numOfHeightTakenNodesInDifference)
+	avl2.CountNumberOfNewHashes(tD, &newNodesCountInDifference)
+	fmt.Println("Number of nodes in the original tree: ", len(b1))
+	fmt.Println("Number of nodes in the update tree: ", len(b2))
+	fmt.Println("number of re-hashes to be made: ", newNodesCountInDifference)
+	fmt.Println("number of nodes exposed in difference: ", numOfExposedNodesInDifference)
+	fmt.Println("number of nodes with height taken in difference: ", numOfHeightTakenNodesInDifference)
 
 	// Check that all nodes in t1 are either in tD or t2 but not both
-	for _, key := range *(avl2.GetInorderTraversal(t1)) {
+	for _, key := range *(avl2.GetInorderTraversal(tt1)) {
 		in_tD := avl2.IsInTree(tD, &key)
-		in_t2 := avl2.IsInTree(t2NodeType, &key)
+		in_tt2 := avl2.IsInTree(tt2NodeType, &key)
 
-		if !in_tD && !in_t2 {
-			fmt.Printf("Key: %v not in tD and not in t2", key)
+		if !in_tD && !in_tt2 {
+			fmt.Printf("Key: %v not in tD and not in tt2", key)
 		}
 
-		if in_tD && in_t2 {
-			fmt.Printf("Key: %v in tD and t2", key)
+		if in_tD && in_tt2 {
+			fmt.Printf("Key: %v in tD and tt2", key)
 		}
 	}
 
 	// Check that all nodes in t2 are either in tD or t1 but not both
-	for _, key := range *(avl2.GetInorderTraversal(t2NodeType)) {
+	for _, key := range *(avl2.GetInorderTraversal(tt2NodeType)) {
 		in_tD := avl2.IsInTree(tD, &key)
-		in_t1 := avl2.IsInTree(t2NodeType, &key)
+		in_tt1 := avl2.IsInTree(tt2NodeType, &key)
 
-		if !in_tD && !in_t1 {
-			fmt.Printf("Key: %v not in tD and not in t1", key)
+		if !in_tD && !in_tt1 {
+			fmt.Printf("Key: %v not in tD and not in tt1", key)
 		}
 
-		if in_tD && in_t1 {
-			fmt.Printf("Key: %v in tD and t1", key)
+		if in_tD && in_tt1 {
+			fmt.Printf("Key: %v in tD and tt1", key)
 		}
 	}
 
