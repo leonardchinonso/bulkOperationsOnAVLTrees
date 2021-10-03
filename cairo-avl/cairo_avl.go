@@ -122,7 +122,7 @@ func split(t *Node, k []byte, numOfExposedNodes *int, numOfHeightTakenNodes *int
 	}
 
 	m, v, L, R, N := exposeNode(t, numOfExposedNodes, numOfHeightTakenNodes)
-	if bytes.Equal(k, m) {
+	if bytes.Compare(k, m) == 0 {
 		return L, R, N
 	}
 
