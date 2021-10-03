@@ -15,7 +15,7 @@ func balancedHeight(hL int, hR int) int {
 
 // rotateRight rotates a node to the right to maintain the AVL balance criteria
 func rotateLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (int, *Node) {
-	kR, vR, TRL, TRR, TRN := exposeNode(TR, numOfExposedNodes)
+	kR, vR, TRL, TRR, TRN := exposeNode(TR, numOfExposedNodes, numOfHeightTakenNodes)
 	hL := HeightOf(TL, numOfHeightTakenNodes)
 	hRL := HeightOf(TRL, numOfHeightTakenNodes)
 	hRR := HeightOf(TRR, numOfHeightTakenNodes)
@@ -27,7 +27,7 @@ func rotateLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNo
 
 // rotateLeft rotates a node to the left to maintain the AVL balance criteria
 func rotateRight(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (int, *Node) {
-	kL, vL, TLL, TLR, TLN := exposeNode(TL, numOfExposedNodes)
+	kL, vL, TLL, TLR, TLN := exposeNode(TL, numOfExposedNodes, numOfHeightTakenNodes)
 	hR := HeightOf(TR, numOfHeightTakenNodes)
 	hLL := HeightOf(TLL, numOfHeightTakenNodes)
 	hLR := HeightOf(TLR, numOfHeightTakenNodes)
@@ -39,7 +39,7 @@ func rotateRight(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedN
 
 // joinRight concatenates a left tree, k and a right tree
 func joinRight(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (int, *Node) {
-	kL, vL, TLL, TLR, TLN := exposeNode(TL, numOfExposedNodes)
+	kL, vL, TLL, TLR, TLN := exposeNode(TL, numOfExposedNodes, numOfHeightTakenNodes)
 	hLR := HeightOf(TLR, numOfHeightTakenNodes)
 	hR := HeightOf(TR, numOfHeightTakenNodes)
 	hLL := HeightOf(TLL, numOfHeightTakenNodes)
@@ -61,7 +61,7 @@ func joinRight(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNod
 }
 
 func joinLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (int, *Node) {
-	kR, vR, TRL, TRR, TRN := exposeNode(TR, numOfExposedNodes)
+	kR, vR, TRL, TRR, TRN := exposeNode(TR, numOfExposedNodes, numOfHeightTakenNodes)
 	hRL := HeightOf(TRL, numOfHeightTakenNodes)
 	hL := HeightOf(TL, numOfHeightTakenNodes)
 	hRR := HeightOf(TRR, numOfHeightTakenNodes)
@@ -99,7 +99,7 @@ func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN
 }
 
 func splitLast(T *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (*Node, []byte, []byte, *Node) {
-	m, v, L, R, N := exposeNode(T, numOfExposedNodes)
+	m, v, L, R, N := exposeNode(T, numOfExposedNodes, numOfHeightTakenNodes)
 	if R == nil {
 		return L, m, v, N
 	}
@@ -121,8 +121,8 @@ func split(t *Node, k []byte, numOfExposedNodes *int, numOfHeightTakenNodes *int
 		return nil, nil, nil
 	}
 
-	m, v, L, R, N := exposeNode(t, numOfExposedNodes)
-	if bytes.Compare(k, m) == 0 {
+	m, v, L, R, N := exposeNode(t, numOfExposedNodes, numOfHeightTakenNodes)
+	if bytes.Equal(k, m) {
 		return L, R, N
 	}
 

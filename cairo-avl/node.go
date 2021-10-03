@@ -50,12 +50,16 @@ func (n *Node) ConvertToDictNode() *DictNode {
 }
 
 // exposeNode opens up a node type
-func exposeNode(tree *Node, numOfExposedNodes *int) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
+func exposeNode(tree *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (k []byte, v []byte, TL *Node, TR *Node, TN *Node) {
 	if tree != nil {
 		if !tree.Exposed {
+			if tree.HeightTaken {
+				*numOfHeightTakenNodes--
+			} else {
+				tree.HeightTaken = true
+			}
 			*numOfExposedNodes++
 			tree.Exposed = true
-			tree.HeightTaken = true
 		}
 		return tree.Key, tree.Value, tree.Left, tree.Right, tree.Nested
 	}
