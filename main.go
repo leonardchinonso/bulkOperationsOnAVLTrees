@@ -79,9 +79,9 @@ func main() {
 	fmt.Println("Number of nodes in the update tree: ", len(b2))
 	fmt.Println("number of re-hashes to be made: ", newNodesCountInUnion)
 	fmt.Println("number of nodes exposed in union: ", numOfExposedNodesInUnion)
-	fmt.Println("number of hashes required to expose nodes in union: ", numOfExposedNodesInUnion * 3)
+	fmt.Println("number of hashes required to expose nodes in union: ", numOfExposedNodesInUnion*3)
 	fmt.Println("number of nodes with height taken in union: ", numOfHeightTakenNodesInUnion)
-	fmt.Println("number of hashes required for taking heights in union: ", numOfHeightTakenNodesInUnion * 2)
+	fmt.Println("number of hashes required for taking heights in union: ", numOfHeightTakenNodesInUnion*2)
 	fmt.Println("number of nodes visited more than once: ", numOfRevisitedNodesInUnion)
 
 	// Check that all nodes in tU are either in t1 or t2
@@ -137,9 +137,9 @@ func main() {
 	fmt.Println("Number of nodes in the update tree: ", len(b2))
 	fmt.Println("number of re-hashes to be made: ", newNodesCountInDifference)
 	fmt.Println("number of nodes exposed in difference: ", numOfExposedNodesInDifference)
-	fmt.Println("number of hashes required to expose nodes in difference: ", numOfExposedNodesInDifference * 3)
+	fmt.Println("number of hashes required to expose nodes in difference: ", numOfExposedNodesInDifference*3)
 	fmt.Println("number of nodes with height taken in difference: ", numOfHeightTakenNodesInDifference)
-	fmt.Println("number of hashes required for taking heights in difference: ", numOfHeightTakenNodesInDifference * 2)
+	fmt.Println("number of hashes required for taking heights in difference: ", numOfHeightTakenNodesInDifference*2)
 	fmt.Println("number of nodes visited more than once: ", numOfRevisitedNodesInDifference)
 
 	// Check that all nodes in t1 are either in tD or t2 but not both
