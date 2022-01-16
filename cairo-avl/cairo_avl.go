@@ -82,7 +82,7 @@ func joinLeft(k []byte, v []byte, TL *Node, TR *Node, TN *Node, numOfExposedNode
 	return rotateRight(kR, vR, TP, TRR, TRN, numOfExposedNodes, numOfHeightTakenNodes)
 }
 
-func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) *Node {
+func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int, numOfRevisitedNodes *int) *Node {
 	hL := HeightOf(TL, numOfHeightTakenNodes)
 	hR := HeightOf(TR, numOfHeightTakenNodes)
 	if hL > hR+1 {
@@ -93,49 +93,50 @@ func join(k []byte, v []byte, DU *DictNode, DD *DictNode, TL *Node, TR *Node, TN
 		_, T := joinLeft(k, v, TL, TR, TN, numOfExposedNodes, numOfHeightTakenNodes)
 		return T
 	}
-	N := Union(Difference(TN, DU, numOfExposedNodes, numOfHeightTakenNodes), DD, numOfExposedNodes, numOfHeightTakenNodes)
+	N := Union(Difference(TN, DU, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes), DD, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
 	h := balancedHeight(hL, hR)
 	return NewNode(k, v, h, TL, TR, N)
 }
 
-func splitLast(T *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) (*Node, []byte, []byte, *Node) {
+func splitLast(T *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int, numOfRevisitedNodes *int) (*Node, []byte, []byte, *Node) {
 	m, v, L, R, N := exposeNode(T, numOfExposedNodes, numOfHeightTakenNodes)
 	if R == nil {
 		return L, m, v, N
 	}
 
-	TP, kP, vP, NP := splitLast(R, numOfExposedNodes, numOfHeightTakenNodes)
-	return join(m, v, nil, nil, L, TP, N, numOfExposedNodes, numOfHeightTakenNodes), kP, vP, NP
+	TP, kP, vP, NP := splitLast(R, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	return join(m, v, nil, nil, L, TP, N, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes), kP, vP, NP
 }
 
-func join2(TL *Node, TR *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int) *Node {
+func join2(TL *Node, TR *Node, numOfExposedNodes *int, numOfHeightTakenNodes *int, numOfRevisitedNodes *int) *Node {
 	if TL == nil {
 		return TR
 	}
-	TLP, k, v, N := splitLast(TL, numOfExposedNodes, numOfHeightTakenNodes)
-	return join(k, v, nil, nil, TLP, TR, N, numOfExposedNodes, numOfHeightTakenNodes)
+	TLP, k, v, N := splitLast(TL, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	return join(k, v, nil, nil, TLP, TR, N, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
 }
 
-func split(t *Node, k []byte, numOfExposedNodes *int, numOfHeightTakenNodes *int) (*Node, *Node, *Node) {
+func split(t *Node, k []byte, numOfExposedNodes *int, numOfHeightTakenNodes *int, numOfRevisitedNodes *int) (*Node, *Node, *Node) {
 	if t == nil {
 		return nil, nil, nil
 	}
 
 	m, v, L, R, N := exposeNode(t, numOfExposedNodes, numOfHeightTakenNodes)
 	if bytes.Compare(k, m) == 0 {
+		*numOfRevisitedNodes++
 		return L, R, N
 	}
 
 	if bytes.Compare(k, m) == -1 {
-		LL, LR, LN := split(L, k, numOfExposedNodes, numOfHeightTakenNodes)
-		return LL, join(m, v, nil, nil, LR, R, N, numOfExposedNodes, numOfHeightTakenNodes), LN
+		LL, LR, LN := split(L, k, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+		return LL, join(m, v, nil, nil, LR, R, N, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes), LN
 	}
 
-	RL, RR, RN := split(R, k, numOfExposedNodes, numOfHeightTakenNodes)
-	return join(m, v, nil, nil, L, RL, N, numOfExposedNodes, numOfHeightTakenNodes), RR, RN
+	RL, RR, RN := split(R, k, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	return join(m, v, nil, nil, L, RL, N, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes), RR, RN
 }
 
-func Union(T0 *Node, D *DictNode, numOfExposedNodes *int, numOfHeightTakenNodes *int) *Node {
+func Union(T0 *Node, D *DictNode, numOfExposedNodes *int, numOfHeightTakenNodes *int, numOfRevisitedNodes *int) *Node {
 	if T0 == nil {
 		return D.ConvertToNode()
 	}
@@ -144,14 +145,14 @@ func Union(T0 *Node, D *DictNode, numOfExposedNodes *int, numOfHeightTakenNodes 
 	}
 
 	k, v, DL, DR, DU, DD := exposeDict(D)
-	TL, TR, TN := split(T0, k, numOfExposedNodes, numOfHeightTakenNodes)
-	L := Union(TL, DL, numOfExposedNodes, numOfHeightTakenNodes)
-	R := Union(TR, DR, numOfExposedNodes, numOfHeightTakenNodes)
-	joined := join(k, v, DU, DD, L, R, TN, numOfExposedNodes, numOfHeightTakenNodes)
+	TL, TR, TN := split(T0, k, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	L := Union(TL, DL, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	R := Union(TR, DR, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	joined := join(k, v, DU, DD, L, R, TN, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
 	return joined
 }
 
-func Difference(T0 *Node, D *DictNode, numOfExposedNodes *int, numOfHeightTakenNodes *int) *Node {
+func Difference(T0 *Node, D *DictNode, numOfExposedNodes *int, numOfHeightTakenNodes *int, numOfRevisitedNodes *int) *Node {
 	if T0 == nil {
 		return nil
 	}
@@ -160,8 +161,8 @@ func Difference(T0 *Node, D *DictNode, numOfExposedNodes *int, numOfHeightTakenN
 	}
 
 	k, _, DL, DR, _, _ := exposeDict(D)
-	TL, TR, _ := split(T0, k, numOfExposedNodes, numOfHeightTakenNodes)
-	L := Difference(TL, DL, numOfExposedNodes, numOfHeightTakenNodes)
-	R := Difference(TR, DR, numOfExposedNodes, numOfHeightTakenNodes)
-	return join2(L, R, numOfExposedNodes, numOfHeightTakenNodes)
+	TL, TR, _ := split(T0, k, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	L := Difference(TL, DL, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	R := Difference(TR, DR, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
+	return join2(L, R, numOfExposedNodes, numOfHeightTakenNodes, numOfRevisitedNodes)
 }

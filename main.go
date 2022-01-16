@@ -71,14 +71,18 @@ func main() {
 
 	numOfExposedNodesInUnion := 0
 	numOfHeightTakenNodesInUnion := 0
+	numOfRevisitedNodesInUnion := 0
 	newNodesCountInUnion := 0
-	tU := avl2.Union(t1, t2, &numOfExposedNodesInUnion, &numOfHeightTakenNodesInUnion)
+	tU := avl2.Union(t1, t2, &numOfExposedNodesInUnion, &numOfHeightTakenNodesInUnion, &numOfRevisitedNodesInUnion)
 	avl2.CountNumberOfNewHashes(tU, &newNodesCountInUnion)
 	fmt.Println("Number of nodes in the original tree: ", len(b1))
 	fmt.Println("Number of nodes in the update tree: ", len(b2))
 	fmt.Println("number of re-hashes to be made: ", newNodesCountInUnion)
 	fmt.Println("number of nodes exposed in union: ", numOfExposedNodesInUnion)
+	fmt.Println("number of hashes required to expose nodes in union: ", numOfExposedNodesInUnion*3)
 	fmt.Println("number of nodes with height taken in union: ", numOfHeightTakenNodesInUnion)
+	fmt.Println("number of hashes required for taking heights in union: ", numOfHeightTakenNodesInUnion*2)
+	fmt.Println("number of nodes visited more than once: ", numOfRevisitedNodesInUnion)
 
 	// Check that all nodes in tU are either in t1 or t2
 	for _, key := range *(avl2.GetInorderTraversal(tU)) {
@@ -125,14 +129,18 @@ func main() {
 
 	numOfExposedNodesInDifference := 0
 	numOfHeightTakenNodesInDifference := 0
+	numOfRevisitedNodesInDifference := 0
 	newNodesCountInDifference := 0
-	tD := avl2.Difference(tt1, tt2, &numOfExposedNodesInDifference, &numOfHeightTakenNodesInDifference)
+	tD := avl2.Difference(tt1, tt2, &numOfExposedNodesInDifference, &numOfHeightTakenNodesInDifference, &numOfRevisitedNodesInDifference)
 	avl2.CountNumberOfNewHashes(tD, &newNodesCountInDifference)
 	fmt.Println("Number of nodes in the original tree: ", len(b1))
 	fmt.Println("Number of nodes in the update tree: ", len(b2))
 	fmt.Println("number of re-hashes to be made: ", newNodesCountInDifference)
 	fmt.Println("number of nodes exposed in difference: ", numOfExposedNodesInDifference)
+	fmt.Println("number of hashes required to expose nodes in difference: ", numOfExposedNodesInDifference*3)
 	fmt.Println("number of nodes with height taken in difference: ", numOfHeightTakenNodesInDifference)
+	fmt.Println("number of hashes required for taking heights in difference: ", numOfHeightTakenNodesInDifference*2)
+	fmt.Println("number of nodes visited more than once: ", numOfRevisitedNodesInDifference)
 
 	// Check that all nodes in t1 are either in tD or t2 but not both
 	for _, key := range *(avl2.GetInorderTraversal(tt1)) {

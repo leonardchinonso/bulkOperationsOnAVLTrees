@@ -84,8 +84,9 @@ func HeightOf(node *Node, numOfHeightTakenNodes *int) int {
 func insertNode(T *Node, k []byte) *Node {
 	numOfExposedNodes := 0
 	numOfHeightTakenNodes := 0
-	TL, TR, TN := split(T, k, &numOfExposedNodes, &numOfHeightTakenNodes)
-	return join(k, k, nil, nil, TL, TR, TN, &numOfExposedNodes, &numOfHeightTakenNodes)
+	numOfRevisitedNodes := 0
+	TL, TR, TN := split(T, k, &numOfExposedNodes, &numOfHeightTakenNodes, &numOfRevisitedNodes)
+	return join(k, k, nil, nil, TL, TR, TN, &numOfExposedNodes, &numOfHeightTakenNodes, &numOfRevisitedNodes)
 }
 
 func _createTree(arr *[][]byte) *Node {
